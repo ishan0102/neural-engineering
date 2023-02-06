@@ -37,8 +37,8 @@ temp.Children(1).Color = 'b';
 
 %% Bandpass Filtering
 
-fc1 = ; % first cutoff frequency in Hz 
-fc2 = ; % second cutoff frequency in Hz 
+fc1 = 800; % first cutoff frequency in Hz 
+fc2 = 2200; % second cutoff frequency in Hz 
 
 % normalize the frequencies
 Wp = [fc1 fc2]*2/fs;
