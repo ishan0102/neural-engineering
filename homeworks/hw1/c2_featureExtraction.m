@@ -49,5 +49,3 @@ plot(MAV_feature); hold on;
 figure()
 plot(featureLabels * max(VAR_feature)); hold on;
 plot(VAR_feature); hold on;
-
-
