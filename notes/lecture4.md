@@ -35,3 +35,7 @@
   - we can repeat this with many neurons and fit a simple linear discriminator as our decoder across some time window
 - brain adapts super fast, monkeys initially use cursors to get reward, then brain control, then robotic arm
   - we initially see performance drops but they pick up faster with similar tasks through "transfer learning"
+
+### Sensorimotor Rhythms
+- SMRs can display **event-related desynchronization** (ERD) or **event-related synchronization** (ERS)
+  - ERD is less synchronized with lower power while ERS is more synchronized with higher power
