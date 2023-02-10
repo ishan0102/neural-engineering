@@ -3,29 +3,38 @@ close all
 clc
 
 load('data.mat')
-load('vf_filtered.mat')
+load('filtered.mat')
 
 %% Plotting the features
 % Note: when plotting the features, scale the featureLabels to the max of
 % the feature values for proper visualization
 windows = [0.05, 0.1, 0.3];
 olaps = [0, 0.25, 0.75];
-makeGrids(windows, olaps, filtered_signal);
+makeGrids(windows, olaps, vf_filtered, VF.trigger);
 
 %% Determining the SNR
-vf_signal = filtered_signal(find(VF.trigger > 0));
-vf_rest = filtered_signal(find(VF.trigger == 0));
-[MAV_signal, VAR_signal, features_signal] = getFeatures(0.1, 0, vf_signal);
-[MAV_rest, VAR_rest, features_rest] = getFeatures(0.1, 0, vf_rest);
-snr = 20 * log10(mean(MAV_signal) / mean(MAV_rest));
+[MAV_feature, VAR_feature, featureLabels] = getFeatures(0.1, 0, vf_filtered, VF.trigger);
+MAV_action = MAV_feature(featureLabels == 1);
+MAV_rest = MAV_feature(featureLabels == 0);
+vf_snr = 20 * log10(mean(MAV_action) / mean(MAV_rest));
+
+[MAV_feature, VAR_feature, featureLabels] = getFeatures(0.1, 0, flex_filtered, Flex.trigger);
+MAV_action = MAV_feature(featureLabels == 1);
+MAV_rest = MAV_feature(featureLabels == 0);
+flex_snr = 20 * log10(mean(MAV_action) / mean(MAV_rest));
+
+[MAV_feature, VAR_feature, featureLabels] = getFeatures(0.1, 0, pinch_filtered, Pinch.trigger);
+MAV_action = MAV_feature(featureLabels == 1);
+MAV_rest = MAV_feature(featureLabels == 0);
+pinch_snr = 20 * log10(mean(MAV_action) / mean(MAV_rest));
 
 %% Create 3x3 grids
-function makeGrids(windows, olaps, filtered_signal)
+function makeGrids(windows, olaps, filtered_signal, filtered_labels)
     for fig = 1:2
         figure(fig)
         for i = 1:length(windows)
             for j = 1:length(olaps)
-                [MAV_feature, VAR_feature, featureLabels] = getFeatures(windows(i), olaps(j), filtered_signal);
+                [MAV_feature, VAR_feature, featureLabels] = getFeatures(windows(i), olaps(j), filtered_signal, filtered_labels);
                 subplot(3, 3, 3*(i-1)+j)
                 if fig == 1
                     plot(featureLabels * max(MAV_feature)); hold on;
@@ -42,10 +51,10 @@ function makeGrids(windows, olaps, filtered_signal)
 end
 
 %% Create features
-function [MAV_feature, VAR_feature, featureLabels] = getFeatures(WSize, Olap, filtered_signal)
-    load('data.mat', 'VF', 'fs')
+function [MAV_feature, VAR_feature, featureLabels] = getFeatures(WSize, Olap, filtered_signal, filtered_labels)
+    load('data.mat', 'fs');
     filteredSignal = filtered_signal; % bandapass filtered signal 
-    label = VF.trigger; % labels of stimulus locations
+    label = filtered_labels; % labels of stimulus locations
     
     % Extracting Features over overlapping windows
     % WSize: window size in s

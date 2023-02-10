@@ -166,5 +166,8 @@ h = spectrum.welch; % creates the Welch spectrum estimator
 SOIf=psd(h,signalOfInterest,'Fs',fs); % calculates and plot the one sided PSD
 plot(SOIf); % Plot the one-sided PSD.
 
-%% Write filtered signal to a file
-save('vf_filtered.mat', 'filtered_signal')
+%% Write all filtered signals to a file
+vf_filtered = filtfilt(b, a, vf_signal);
+flex_filtered = filtfilt(b, a, flex_signal);
+pinch_filtered = filtfilt(b, a, pinch_signal);
+save('filtered.mat', 'vf_filtered', 'flex_filtered', 'pinch_filtered')
