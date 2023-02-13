@@ -12,21 +12,67 @@ windows = [0.05, 0.1, 0.3];
 olaps = [0, 0.25, 0.75];
 makeGrids(windows, olaps, vf_filtered, VF.trigger);
 
-%% Determining the SNR
+%% Plot MAV vs. VAR
+figure()
 [MAV_feature, VAR_feature, featureLabels] = getFeatures(0.1, 0, vf_filtered, VF.trigger);
-MAV_action = MAV_feature(featureLabels == 1);
-MAV_rest = MAV_feature(featureLabels == 0);
-vf_snr = 20 * log10(mean(MAV_action) / mean(MAV_rest));
+subplot(3,2,1)
+plot(featureLabels * max(MAV_feature)); hold on;
+plot(MAV_feature);
+title("VF MAV Features")
+subplot(3,2,2)
+plot(featureLabels * max(VAR_feature)); hold on;
+plot(VAR_feature);
+title("VF VAR Features")
 
 [MAV_feature, VAR_feature, featureLabels] = getFeatures(0.1, 0, flex_filtered, Flex.trigger);
-MAV_action = MAV_feature(featureLabels == 1);
-MAV_rest = MAV_feature(featureLabels == 0);
-flex_snr = 20 * log10(mean(MAV_action) / mean(MAV_rest));
+subplot(3,2,3)
+plot(featureLabels * max(MAV_feature)); hold on;
+plot(MAV_feature);
+title("Flex MAV Features")
+subplot(3,2,4)
+plot(featureLabels * max(VAR_feature)); hold on;
+plot(VAR_feature);
+title("Flex VAR Features")
 
 [MAV_feature, VAR_feature, featureLabels] = getFeatures(0.1, 0, pinch_filtered, Pinch.trigger);
-MAV_action = MAV_feature(featureLabels == 1);
-MAV_rest = MAV_feature(featureLabels == 0);
-pinch_snr = 20 * log10(mean(MAV_action) / mean(MAV_rest));
+subplot(3,2,5)
+plot(featureLabels * max(MAV_feature)); hold on;
+plot(MAV_feature);
+title("Pinch MAV Features")
+subplot(3,2,6)
+plot(featureLabels * max(VAR_feature)); hold on;
+plot(VAR_feature);
+title("Pinch VAR Features")
+
+%% Determining the SNR
+[MAV_feature_vf, VAR_feature_vf, featureLabels_vf] = getFeatures(0.1, 0, vf_filtered, VF.trigger);
+MAV_action = MAV_feature_vf(featureLabels_vf == 1);
+MAV_rest = MAV_feature_vf(featureLabels_vf == 0);
+snr_vf_mav = 20 * log10(mean(MAV_action) / mean(MAV_rest));
+VAR_action = VAR_feature_vf(featureLabels_vf == 1);
+VAR_rest = VAR_feature_vf(featureLabels_vf == 0);
+snr_vf_var = 20 * log10(mean(VAR_action) / mean(VAR_rest));
+
+[MAV_feature_flex, VAR_feature_flex, featureLabels_flex] = getFeatures(0.1, 0, flex_filtered, Flex.trigger);
+MAV_action = MAV_feature_flex(featureLabels_flex == 1);
+MAV_rest = MAV_feature_flex(featureLabels_flex == 0);
+snr_flex_mav = 20 * log10(mean(MAV_action) / mean(MAV_rest));
+VAR_action = VAR_feature_flex(featureLabels_flex == 1);
+VAR_rest = VAR_feature_flex(featureLabels_flex == 0);
+snr_flex_var = 20 * log10(mean(VAR_action) / mean(VAR_rest));
+
+[MAV_feature_pinch, VAR_feature_pinch, featureLabels_pinch] = getFeatures(0.1, 0, pinch_filtered, Pinch.trigger);
+MAV_action = MAV_feature_pinch(featureLabels_pinch == 1);
+MAV_rest = MAV_feature_pinch(featureLabels_pinch == 0);
+snr_pinch_mav = 20 * log10(mean(MAV_action) / mean(MAV_rest));
+VAR_action = VAR_feature_pinch(featureLabels_pinch == 1);
+VAR_rest = VAR_feature_pinch(featureLabels_pinch == 0);
+snr_pinch_var = 20 * log10(mean(VAR_action) / mean(VAR_rest));
+
+%% Write features to a file
+save('features.mat', 'MAV_feature_vf', 'VAR_feature_vf', 'featureLabels_vf', ...
+    'MAV_feature_flex', 'VAR_feature_flex', 'featureLabels_flex', ...
+    'MAV_feature_pinch', 'VAR_feature_pinch', 'featureLabels_pinch')
 
 %% Create 3x3 grids
 function makeGrids(windows, olaps, filtered_signal, filtered_labels)

@@ -2,13 +2,23 @@ clear
 close all
 clc
 
+load('features.mat')
+MAVClass1 = MAV_feature_vf;
+MAVClass2 = MAV_feature_flex;
+VARClass1 = VAR_feature_vf;
+VARClass2 = VAR_feature_flex;
+TriggerClass1 = featureLabels_vf;
+TriggerClass2 = featureLabels_flex;
+
 %%
 % Inputs: 
 % --------
-% MAVClass1: the features of the VF case (stimulus and rest features)
-% MAVClass2: the features of the Pinch case (stimulus and rest features)
+% MAVClass1: the MAV features of the VF case (stimulus and rest features)
+% MAVClass2: the MAV features of the Flex case (stimulus and rest features)
+% VARClass1: the VAR features of the VF case (stimulus and rest features)
+% VARClass2: the VAR features of the Flex case (stimulus and rest features)
 % TriggerClass1: labels for VF features (stimulus or rest label)
-% TriggerClass2: labels for Pinch features (stimulus or rest label)
+% TriggerClass2: labels for Flex features (stimulus or rest label)
 
 % Build the datasets
 MAV_class1 = MAVClass1(find(TriggerClass1==1));
@@ -75,9 +85,17 @@ c8 = cvpartition(length(VAR_Labels_Class1vsClass2),'KFold',k);
 c9 = cvpartition(length(MAVVAR_Labels_Class1vsClass2),'KFold',k);
 
 % Repeat the following for i=1:k, and average performance metrics across all iterations
-i=1;
-% loop over all k-folds and avergae the performance
-% for i=1:k
+TstAcc_MAV_C1rest_avg = 0;
+TstAcc_VAR_C1rest_avg = 0;
+TstAcc_MAVVAR_C1rest_avg = 0;
+TstAcc_MAV_C2rest_avg = 0;
+TstAcc_VAR_C2rest_avg = 0;
+TstAcc_MAVVAR_C2rest_avg = 0;
+TstAcc_MAV_C1C2_avg = 0;
+TstAcc_VAR_C1C2_avg = 0;
+TstAcc_MAVVAR_C1C2_avg = 0;
+for i=1:k
+    % Class1 vs Rest
     [TstMAVFC1Rest TstMAVErrC1Rest] = classify(MAV_Data_Class1vsRest(c1.test(i))',MAV_Data_Class1vsRest(c1.training(i))',MAV_Labels_Class1vsRest(c1.training(i)));
     [TstCM_MAV_C1rest dum1 TstAcc_MAV_C1rest dum2] = confusion(MAV_Labels_Class1vsRest(c1.test(i)), TstMAVFC1Rest);
 
@@ -106,5 +124,59 @@ i=1;
 
     [TstMAVVARFC1C2 TstMAVVARErrC1C2] = classify(MAVVAR_Data_Class1vsClass2(:,c9.test(i))',MAVVAR_Data_Class1vsClass2(:,c9.training(i))',MAVVAR_Labels_Class1vsClass2(c9.training(i)));
     [TstCM_MAVVAR_C1C2 dum1 TstAcc_MAVVAR_C1C2 dum2] = confusion(MAVVAR_Labels_Class1vsClass2(c9.test(i)), TstMAVVARFC1C2);
-% end
+
+    % Average out the performance metrics
+    TstAcc_MAV_C1rest_avg = TstAcc_MAV_C1rest_avg + TstAcc_MAV_C1rest / k;
+    TstAcc_VAR_C1rest_avg = TstAcc_VAR_C1rest_avg + TstAcc_VAR_C1rest / k;
+    TstAcc_MAVVAR_C1rest_avg = TstAcc_MAVVAR_C1rest_avg + TstAcc_MAVVAR_C1rest / k;
+    TstAcc_MAV_C2rest_avg = TstAcc_MAV_C2rest_avg + TstAcc_MAV_C2rest / k;
+    TstAcc_VAR_C2rest_avg = TstAcc_VAR_C2rest_avg + TstAcc_VAR_C2rest / k;
+    TstAcc_MAVVAR_C2rest_avg = TstAcc_MAVVAR_C2rest_avg + TstAcc_MAVVAR_C2rest / k;
+    TstAcc_MAV_C1C2_avg = TstAcc_MAV_C1C2_avg + TstAcc_MAV_C1C2 / k;
+    TstAcc_VAR_C1C2_avg = TstAcc_VAR_C1C2_avg + TstAcc_VAR_C1C2 / k;
+    TstAcc_MAVVAR_C1C2_avg = TstAcc_MAVVAR_C1C2_avg + TstAcc_MAVVAR_C1C2 / k;
+end
+
+%% Display the average performance metrics
+disp('Average Test Accuracy for Class1 vs Rest');
+disp(TstAcc_MAV_C1rest_avg);
+disp(TstAcc_VAR_C1rest_avg);
+disp(TstAcc_MAVVAR_C1rest_avg);
+disp('Average Test Accuracy for Class2 vs Rest');
+disp(TstAcc_MAV_C2rest_avg);
+disp(TstAcc_VAR_C2rest_avg);
+disp(TstAcc_MAVVAR_C2rest_avg);
+disp('Average Test Accuracy for Class1 vs Class2');
+disp(TstAcc_MAV_C1C2_avg);
+disp(TstAcc_VAR_C1C2_avg);
+disp(TstAcc_MAVVAR_C1C2_avg);
+
 %%
+figure()
+subplot(3, 3, 1)
+confusionchart(round(TstCM_MAV_C1rest))
+title('MAV Confusion Matrix for Class1 vs Rest')
+subplot(3, 3, 2)
+confusionchart(round(TstCM_VAR_C1rest))
+title('VAR Confusion Matrix for Class1 vs Rest')
+subplot(3, 3, 3)
+confusionchart(round(TstCM_MAVVAR_C1rest))
+title('MAVVAR Confusion Matrix for Class1 vs Rest')
+subplot(3, 3, 4)
+confusionchart(round(TstCM_MAV_C2rest))
+title('MAV Confusion Matrix for Class2 vs Rest')
+subplot(3, 3, 5)
+confusionchart(round(TstCM_VAR_C2rest))
+title('VAR Confusion Matrix for Class2 vs Rest')
+subplot(3, 3, 6)
+confusionchart(round(TstCM_MAVVAR_C2rest))
+title('MAVVAR Confusion Matrix for Class2 vs Rest')
+subplot(3, 3, 7)
+confusionchart(round(TstCM_MAV_C1C2))
+title('MAV Confusion Matrix for Class1 vs Class2')
+subplot(3, 3, 8)
+confusionchart(round(TstCM_VAR_C1C2))
+title('VAR Confusion Matrix for Class1 vs Class2')
+subplot(3, 3, 9)
+confusionchart(round(TstCM_MAVVAR_C1C2))
+title('MAVVAR Confusion Matrix for Class1 vs Class2')
