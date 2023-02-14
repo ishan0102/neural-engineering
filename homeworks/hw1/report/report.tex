@@ -109,6 +109,6 @@ There seemed to be an imbalance in classification difficulty as any classificati
 
 Across the board, MAV seemed to have a lower confusion rate than VAR. This is inconsistent with the SNR values we found earlier since VAR had a higher SNR than MAV for all three classes.
 
-Finally, the split of the training and testing sets is not random due to the temporal nature of the data. Randomly shuffling the data would destroy crucial information about the data and produce a classifier that would not generalize well to new data. Splitting the data temporally is a much better approach to allow the classifier to work for new, real-time data.
+Finally, the split of the training and testing sets is random due to the use of \texttt{cvpartition}. Randomly shuffling the data destroys crucial information about the data and produces a classifier that would not generalize well to new data. Splitting the data temporally is a much better approach to allow the classifier to work for new, real-time data, and should be done if we were to use this classifier in a real-world application.
 
 \end{document}
