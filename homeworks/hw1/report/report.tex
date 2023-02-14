@@ -86,5 +86,29 @@ We can compute a signal-to-noise ratio (SNR) for each feature to determine which
 Based on this table, we can see that VAR is a better feature than MAV for all three stimuli since the SNR indicates that the feature is more informative. It also appears that the Flex signal is easiest to detect using a classifier since it has the highest SNR of all the classes. One physiological explanation of this from the Raspopovic paper is that SNR is proportional to the diameter of fibers conducting the corresponding stimuli. Therefore, proprioceptive signals from the Flex muscles are easier to detect than the other stimuli.
 
 \section{Classification}
+The confusion matrices for the different classifiers are shown below.
+
+\begin{center}
+    \includegraphics[width=\textwidth]{vf_flex.jpg}
+    VF vs. Flex
+\end{center}
+
+\begin{center}
+    \includegraphics[width=\textwidth]{vf_pinch.jpg}
+    VF vs. Pinch
+\end{center}
+
+\begin{center}
+    \includegraphics[width=\textwidth]{flex_pinch.jpg}
+    Flex vs. Pinch
+\end{center}
+
+The confusion matrices show that it was easy to classify VF and Flex against Rest but hard to classify Pinch against Rest. It was also hard to classify VF against Pinch, though classifying VF against Flex and Flex against Pinch were also easy. 
+
+There seemed to be an imbalance in classification difficulty as any classification with Pinch had high confusion, while VF and Flex classifications had low confusion. This tells me that VF and Flex are likely the easiest signals to detect, while Pinch is the hardest. These findings are consistent with the PSD plots since Pinch had a very similar signal to Rest and VF and Flex had a very different signal from its Rest signal. Additionally, this matches the SNR values we found earlier since Pinch had the lowest SNR of all the classes.
+
+Across the board, MAV seemed to have a lower confusion rate than VAR. This is inconsistent with the SNR values we found earlier since VAR had a higher SNR than MAV for all three classes.
+
+Finally, the split of the training and testing sets is not random due to the temporal nature of the data. Randomly shuffling the data would destroy crucial information about the data and produce a classifier that would not generalize well to new data. Splitting the data temporally is a much better approach to allow the classifier to work for new, real-time data.
 
 \end{document}
