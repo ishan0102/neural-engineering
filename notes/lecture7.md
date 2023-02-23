@@ -49,3 +49,16 @@
   - much easier to reach in surgery than within brain
   - subretinal exploits most of the natural visual pathway and replaces lost photoreceptors but has a more complex surgery
   - epiretinal is just the last layer, lasts longer, and involves ganglion cell stimulation
+
+## Subretinal Prostheses
+- we can stimulate retinal neurons with photodiodes to replace photoreceptors
+- passive photodiodes don't generate high enough currents so we need electrical or photovoltaic power
+- example device is the Alpha IMS
+- photovoltaic subretinal systems are better then electrical as they are less bulky and can have a wireless implant
+  - implanted in simple surgery and has better visual acuity
+
+## Optogenetic Epiretinal Prostheses
+- targets retinal ganglion cells
+- virus encodes light-sensing protein that fuses to cells
+  - viral vector is injected into the eye directly
+- there are also neuromorphic cameras that can detect changes in light intensity and project them onto the retina
