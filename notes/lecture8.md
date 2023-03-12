@@ -1,7 +1,7 @@
 # Lecture 8: Hearing
 
 ## The Human Ear
-- sounds enters through the ear and reaches the tympanic membrane to create vibrations
+- sounds enter through the ear and reaches the tympanic membrane to create vibrations
 - these vibrations are then amplified and the cochlea transduces the vibrations into neural signals
   - this process is possible due to the movement of hair, these hair cells are like piano keys in a spiral shape that can be bent by the vibrations
 
