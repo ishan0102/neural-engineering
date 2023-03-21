@@ -43,3 +43,17 @@
 - early experiences have a decisive impact on the brain architecture
 - newborn brains only have 25% of the adult brain volume -> number of synapses grows more than tenfold
 - brain can also learn what the signals should sound like and can learn to recognize speech well
+
+### Optogenetics
+- optogenetics is a technique that uses light to control neurons
+- 16 microscale thin-film light-emitting diodes (LEDs) are implanted in the cochlea
+
+## Auditory Brainstem Implant (ABI)
+- if cochlea and auditory nerve are damaged, the ABI can be used to bypass the cochlea and reach the cochlear nucleus of the brainstem
+  - similar to cochlear implant
+- most candidates are deaf from NF2, 1000+ ABIs in deaf adults worldwide
+- ABI doesn't restore hearing, but users have sound awareness
+- requires many sessions with audiologist to learn how to interpret signals
+  - people can have good word recognition and use lip reading to communicate
+- limited by current spread -> poor spatial specificity -> limited performance and side effects
+  - we need flexible electrodes that conform to the shape of the cochlear nucleus
