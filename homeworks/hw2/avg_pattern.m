@@ -24,7 +24,8 @@ end
 plot(linspace(0, 1, n)*t, pinch_mav_avg(:, 3));
 legend_labels{end} = 'Average Trial';
 hold off;
-title("MAV average for Pinch and 5 random trials");
+title("MAV average – Pinch and 5 random trials");
+xlim([0, 2.5]);
 xlabel("Time (s)");
 legend(legend_labels)
 
@@ -42,7 +43,8 @@ for i = 1:length(trials)
 end
 plot(linspace(0, 1, n)*t, point_mav_avg(:, 3));
 hold off;
-title("MAV average for Point and 5 random trials");
+title("MAV average – Point and 5 random trials");
+xlim([0, 2.5]);
 xlabel("Time (s)");
 legend(legend_labels)
 
@@ -60,7 +62,8 @@ for i = 1:length(trials)
 end
 plot(linspace(0, 1, n)*t, grasp_mav_avg(:, 3));
 hold off;
-title("MAV average for Grasp and 5 random trials");
+title("MAV average — Grasp and 5 random trials");
+xlim([0, 2.5]);
 xlabel("Time (s)");
 legend(legend_labels)
 

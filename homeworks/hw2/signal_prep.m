@@ -133,7 +133,7 @@ function plot_run_trial(subject, filtered, run_num, trial_num)
         file_suffix = "";
     end
     
-    saveas(gcf, "part"+run_num+".png");
+%     saveas(gcf, "part"+run_num+".png");
 end
 
 function plot_psd(subject, filtered, run_num, trial_num, sensor)
@@ -193,7 +193,7 @@ function plot_psd(subject, filtered, run_num, trial_num, sensor)
         file_suffix = "";
     end
     
-    saveas(gcf, "PSD"+run_num+".png");
+%     saveas(gcf, "PSD"+run_num+".png");
 end
 
 function filtered_emg = filter_all_runs(subject)

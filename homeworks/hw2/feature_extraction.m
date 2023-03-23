@@ -19,13 +19,14 @@ WL_class2 = WL(class_labels==2);
 MAV_class2 = MAV(class_labels==3);
 WL_class2 = WL(class_labels==3);
 
-%Plot feature space
-for i = 1:1 
+% Plot feature space for subject 1
+figure;
+sgtitle('Subject 1');
+for i = 1:4
     MAV = (subject_features_subject1{i}{1});
     WL = (subject_features_subject1{i}{2});
     class_labels = cell2mat(subject_features_subject1{i}{3});
-   
-    
+
     MAV_class1 = MAV(class_labels==1);
     WL_class1 = WL(class_labels==1);
     MAV_class2 = MAV(class_labels==2);
@@ -33,15 +34,41 @@ for i = 1:1
     MAV_class3 = MAV(class_labels==3);
     WL_class3 = WL(class_labels==3);
 
-    figure;
-    scatter(cell2mat(MAV_class1(1)), cell2mat(WL_class1(1)), 'r', 'filled');
-    hold on; 
-    scatter(cell2mat(MAV_class2(1)), cell2mat(WL_class2(1)), 'g', 'filled');
+    subplot(2, 2, i);
+    scatter(cell2mat(MAV_class1(1)), cell2mat(WL_class1(1)), 'r', 'filled', 'Marker', 's');
+    hold on;
+    scatter(cell2mat(MAV_class2(1)), cell2mat(WL_class2(1)), 'g', 'filled', 'Marker', '^');
     scatter(cell2mat(MAV_class3(1)), cell2mat(WL_class3(1)), 'b', 'filled');
     xlabel('MAV');
     ylabel('WL');
-    title('Feature space for sensor '+sensors(i));
-    legend("Pinch", "Point", "Grasp")
+    title(sensors(i) + ' feature space - WL vs. MAV');
+    legend("Pinch", "Point", "Grasp");
+end
+
+% Plot feature space for subject 2
+figure;
+sgtitle('Subject 2');
+for i = 1:4
+    MAV = (subject_features_subject2{i}{1});
+    WL = (subject_features_subject2{i}{2});
+    class_labels = cell2mat(subject_features_subject2{i}{3});
+
+    MAV_class1 = MAV(class_labels==1);
+    WL_class1 = WL(class_labels==1);
+    MAV_class2 = MAV(class_labels==2);
+    WL_class2 = WL(class_labels==2);
+    MAV_class3 = MAV(class_labels==3);
+    WL_class3 = WL(class_labels==3);
+
+    subplot(2, 2, i);
+    scatter(cell2mat(MAV_class1(1)), cell2mat(WL_class1(1)), 'r', 'filled', 'Marker', 's');
+    hold on;
+    scatter(cell2mat(MAV_class2(1)), cell2mat(WL_class2(1)), 'g', 'filled', 'Marker', '^');
+    scatter(cell2mat(MAV_class3(1)), cell2mat(WL_class3(1)), 'b', 'filled');
+    xlabel('MAV');
+    ylabel('WL');
+    title(sensors(i) + ' feature space - WL vs. MAV');
+    legend("Pinch", "Point", "Grasp");
 end
 
 %% Functions 
