@@ -5,6 +5,7 @@
 psd_features_subj1 = feature_extraction(subject1.subj1);
 psd_features_subj2 = feature_extraction(subject2.subj2);
 disp("Updated psd feature data structure");
+load("ch32Locations.mat")
 
 %% example features
 
@@ -22,7 +23,7 @@ end
 
 channel_names = subject1.subj1.offline.run(1).header.chLabels;
 band_names = [4,6,8,10,12,14,16,18,20,22,24,26,28,30];
-[sorted_values, sorted_indices] = sort(fisher_scores_subj2{7}(:),'descend');
+[sorted_values, sorted_indices] = sort(fisher_scores_subj2{6}(:),'descend');
 for i = 1:10
     [band, channel] = ind2sub([14,32], sorted_indices(i));
     disp(i + ": values: " + sorted_values(i) + " channel: " + channel_names{channel} + " band: "+ band_names(band));
@@ -35,11 +36,10 @@ end
 
 
 %% Fisher scores across sessions 2.3
-load("ch32Locations.mat");
 
 % Create a figure with 7 subplots arranged in a 3 x 3 grid
-fisher_score_sum = {};
 figure
+fisher_score_sum = {};
 for i = 1:7
     scores = fisher_scores_subj1{i};
     sum_score = sum(scores);
@@ -54,8 +54,9 @@ for i = 1:7
 end
 text(1,-0.7,'Summed Fisher Score for Subject 1 on Sessions 1-7','HorizontalAlignment','center','FontSize',9,'FontWeight','bold','Interpreter','none');
 
-fisher_score_sum = {};
+
 figure
+fisher_score_sum = {};
 for i = 1:7
     scores = fisher_scores_subj2{i};
     sum_score = sum(scores);
@@ -70,26 +71,95 @@ for i = 1:7
 end
 text(1,-0.7,'Summed Fisher Score for Subject 2 on Sessions 1-7','HorizontalAlignment','center','FontSize',9,'FontWeight','bold','Interpreter','none');
 
+% fisher_score_sum = {};
+% for i = 1:7
+%     scores = fisher_scores_subj1{i};
+%     sum_score = sum(scores);
+%     fisher_score_sum{end+1} = (sum_score);  
+%     figure
+%     hold on;
+%     title("Summed Fisher Score for Subject 2 on session "+i);
+%     topoplot(fisher_score_sum{end}, ch32Locations, 'maplimits', 'maxmin');
+%     hold off;
+% end
+
+% fisher_score_sum = {};
+% for i = 1:7
+%     scores = fisher_scores_subj2{i};
+%     sum_score = sum(scores);
+%     fisher_score_sum{end+1} = (sum_score);  
+%     figure
+%     hold on;
+%     title("Summed Fisher Score for Subject 2 on session "+i);
+%     topoplot(fisher_score_sum{end}, ch32Locations, 'maplimits', 'maxmin');
+%     hold off;
+% end
+
+
 %% Highest Fisher score 2.4
 
-[sorted_values, sorted_indices] = sort(fisher_scores_subj1{7}(:),'descend');
-[channel_subj1, band_subj1] =ind2sub([14,32], sorted_indices(1));
-[sorted_values, sorted_indices] = sort(fisher_scores_subj2{7}(:),'descend');
-[channel_subj2, band_subj2] = ind2sub([14,32], sorted_indices(1));
+[sorted_values, sorted_indices] = sort(fisher_scores_subj1{6}(:),'descend');
+[band_subj1, channel_subj1] =ind2sub([14,32], sorted_indices(1)); 
+[sorted_values, sorted_indices] = sort(fisher_scores_subj2{6}(:),'descend');
+[band_subj2, channel_subj2] = ind2sub([14,32], sorted_indices(1));
 
 subj1_session_fisher = [];
 subj2_session_fisher = [];
 for i = 1:7
     scores = fisher_scores_subj1{i};
-    subj1_session_fisher(end+1) = scores(channel_subj1, band_subj1);
-    subj2_session_fisher(end+1) = scores(channel_subj2, band_subj2);  
+    subj1_session_fisher(end+1) = scores(band_subj1, channel_subj1);
+    scores = fisher_scores_subj2{i};
+    subj2_session_fisher(end+1) = scores(band_subj2, channel_subj2);  
 end
 
+disp("test");
+disp(subj2_session_fisher);
+% 
+graph_statistical_analysis(subj1_session_fisher, 1);
+graph_statistical_analysis(subj2_session_fisher, 2);
     
+%% 2.5 
+
+channel_names = subject1.subj1.offline.run(1).header.chLabels;
+band_names = [4,6,8,10,12,14,16,18,20,22,24,26,28,30];
+[sorted_values, sorted_indices] = sort(fisher_scores_subj2{6}(:),'descend');
+top_10_features = {};
+for i = 1:10
+     [band, channel] = ind2sub([14,32], sorted_indices(i)); 
+     top_10_features{end+1} = [band, channel];
+end
+
+
+fisher_10scores = zeros(6,10); % 6 session 10 features each 
+for i = 1:6
+    for j = 1:10
+        [dim] = top_10_features{j};
+        fisher_10scores(i,j) = (fisher_scores_subj2{i}(dim(1), dim(2)));
+    end
+end
+
+disp(size(fisher_10scores));
+disp(means_subj2);
+
+correlations = zeros(10,1);
+for i = 1:10
+    [r,p] = corrcoef(fisher_10scores(:,i), means_subj2);
+    correlations(i) = p(1,2);
+end
+
+disp("correlations (not significant): ")
+disp(correlations);
+
+graph_statistical_analysis(fisher_10scores(:,1),3);
+% graph_statistical_analysis(fisher_10scores(:,2),3);
+
+
+
+
 %% Functions 
 
 function psd_features = feature_extraction(subject)
-    % returns an array of 7 cells first 6 are offline runs last is online
+    % returns an array of 7 cells first 6 are online runs last is offline
     % first cell is left second cell is right 
     % cells are 14 x 32 x 30 where 30 is 10 trials from 3 runs 
     %
@@ -226,3 +296,53 @@ function fisher_scores = calculate_fisher_score(session_data)
     fisher_scores = abs(mean_matrix_left - mean_matrix_right) ./ sqrt(std_matrix_left.^2 + std_matrix_right.^2);
 
 end
+
+
+function graph_statistical_analysis(data, subj)
+    y = data;
+    x = [1 2 3 4 5 6 7];
+    if subj == 3
+        x = [1 2 3 4 5 6];
+    end
+    disp(y);
+    p = polyfit(x, y, 1); % fit a first-degree polynomial to the data
+    yfit = polyval(p, x); % predicted values of y based on line of best fit
+    r = corrcoef(y, yfit); % correlation coefficient
+    rsq = r(1,2)^2; % R-squared value
+    disp(rsq);
+    
+    figure;
+    hold on;
+    
+    lim1 = [];
+    lim = [];
+    titles = "";
+    switch subj
+        case 1
+            lim = [0, .5];
+            lim1 = [0.8, 7.2];
+            titles = "Statistical Analyisis of Best Channel/Band for Subject 1";
+        case 2
+            lim1 = [0.8, 7.2];
+            lim = [0, .65];
+            titles = "Statistical Analyisis of Best Channel/Band for Subject 2";
+        case 3
+            lim1 = [0.8, 6.2];
+            lim = [0, .8];
+            titles = "Statistical Analyisis of top Feature for Subject 2";
+    end
+    
+    
+    str = "R-squared = " + string(rsq);
+    dim = [.2 .5 .3 .3];
+    annotation('textbox', dim, 'String', str, 'FitBoxToText', 'on');
+    plot(x, y, 'o', x, polyval(p, x), '-');
+    ylim(lim);
+    xlim(lim1);
+    xlabel('Session');
+    ylabel('Fischer Score');
+    title(titles);
+    hold off;
+end
+
+

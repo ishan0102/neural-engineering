@@ -29,6 +29,8 @@ RIGHT_END_HIT = 7703;
 %% Load and Plot Raw Signal
 subject1 = load("subj1.mat");
 subject2 = load("subj2.mat");
+load("ch32Locations.mat");
+disp("Load complete");
 
 
 %% Plot accuracy over session
@@ -57,17 +59,25 @@ for i = 1:6
     idx = idx + 3;
 end
 
-figure 
+% Updated style for accuracy plot
+figure
 hold on;
-plot(means_subj1);
-hold on
-plot(means_subj2);
-hold off; 
+plot(means_subj1, '-o', 'LineWidth', 2, 'Color', [0, 0.4470, 0.7410], 'MarkerFaceColor', [0, 0.4470, 0.7410], 'MarkerSize', 8);
+plot(means_subj2, '-s', 'LineWidth', 2, 'Color', [0.8500, 0.3250, 0.0980], 'MarkerFaceColor', [0.8500, 0.3250, 0.0980], 'MarkerSize', 8);
+hold off;
 ylim([0 0.8]);
-xlabel('Session');
-ylabel('Accuracy per session');
-title("Accuracy over sessions");
-legend("Subject 1", "Subject 2");
+xlabel('Session', 'FontSize', 12, 'FontWeight', 'bold');
+ylabel('Accuracy per session', 'FontSize', 12, 'FontWeight', 'bold');
+title("Accuracy over sessions", 'FontSize', 14, 'FontWeight', 'bold');
+legend("Subject 1", "Subject 2", 'FontSize', 10, 'Location', 'best');
+grid on;
+ax = gca;
+ax.FontSize = 11;
+ax.FontWeight = 'bold';
+ax.LineWidth = 1.5;
+ax.GridLineStyle = '--';
+ax.GridAlpha = 0.5;
+ax.Box = 'on';
 
 
 %% Statistical analysis across sessions 
@@ -88,7 +98,6 @@ ttest_extraction(accuracy_subj2,2);
 
 ttest_extraction(timeouts_subj1,3);
 ttest_extraction(timeouts_subj2,4);
-
 
 
 %% Functions 
@@ -149,9 +158,6 @@ function extract_analysis(data, index)
     rsq = r(1,2)^2; % R-squared value
     disp(rsq);
     
-    figure;
-    hold on;
-    
     lim = [];
     titles = "";
     switch index
@@ -167,15 +173,29 @@ function extract_analysis(data, index)
     end 
     
     
-    str = "R-squared = " + string(rsq);
-    dim = [.2 .5 .3 .3];
-    annotation('textbox', dim, 'String', str, 'FitBoxToText', 'on');
-    plot(x, y, 'o', x, polyval(p, x), '-');
+    % Updated style for extract_analysis plots
+    figure;
+    hold on;
+    str = "R-squared = " + string(round(rsq, 4));
+    dim = [.65 .1 .3 .1];
+    annotation('textbox', dim, 'String', str, 'FitBoxToText', 'on', ...
+               'BackgroundColor', [1 1 1], 'EdgeColor', [0, 0, 0], ...
+               'LineWidth', 1.5, 'FontSize', 12, 'FontWeight', 'bold', 'Color', [0.1, 0.1, 0.1]);
+
+    plot(x, y, 'o', x, polyval(p, x), '-', 'LineWidth', 2, 'Color', [0, 0.4470, 0.7410], 'MarkerFaceColor', [0, 0.4470, 0.7410], 'MarkerSize', 8);
     ylim(lim);
     xlim([0.8 6.2]);
-    xlabel('Session');
-    ylabel('Percentage of Timeouts');
-    title(titles);
+    xlabel('Session', 'FontSize', 12, 'FontWeight', 'bold');
+    ylabel('Percentage of Timeouts', 'FontSize', 12, 'FontWeight', 'bold');
+    title(titles, 'FontSize', 14, 'FontWeight', 'bold');
+    grid on;
+    ax = gca;
+    ax.FontSize = 11;
+    ax.FontWeight = 'bold';
+    ax.LineWidth = 1.5;
+    ax.GridLineStyle = '--';
+    ax.GridAlpha = 0.5;
+    ax.Box = 'on';
     hold off;
 
 end
@@ -213,13 +233,21 @@ function ttest_extraction(data, index)
         
     end 
 
-    figure 
+    % Updated style for ttest_extraction plots
+    figure
     hold on;
-    plot(x, p_list,'o');
-    hold off; 
+    plot(x, p_list, 'o', 'LineWidth', 2, 'Color', [0, 0.4470, 0.7410], 'MarkerFaceColor', [0, 0.4470, 0.7410], 'MarkerSize', 8);
+    hold off;
     ylim(lim);
-    xlabel('Session');
-    ylabel('P Value');
-    title(titles);
-
+    xlabel('Session', 'FontSize', 12, 'FontWeight', 'bold');
+    ylabel('P Value', 'FontSize', 12, 'FontWeight', 'bold');
+    title(titles, 'FontSize', 14, 'FontWeight', 'bold');
+    grid on;
+    ax = gca;
+    ax.FontSize = 11;
+    ax.FontWeight = 'bold';
+    ax.LineWidth = 1.5;
+    ax.GridLineStyle = '--';
+    ax.GridAlpha = 0.5;
+    ax.Box = 'on';
 end
