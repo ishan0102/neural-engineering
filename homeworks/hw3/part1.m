@@ -65,7 +65,7 @@ hold on;
 plot(means_subj1, '-o', 'LineWidth', 2, 'Color', [0, 0.4470, 0.7410], 'MarkerFaceColor', [0, 0.4470, 0.7410], 'MarkerSize', 8);
 plot(means_subj2, '-s', 'LineWidth', 2, 'Color', [0.8500, 0.3250, 0.0980], 'MarkerFaceColor', [0.8500, 0.3250, 0.0980], 'MarkerSize', 8);
 hold off;
-ylim([0 0.8]);
+ylim([0 1]);
 xlabel('Session', 'FontSize', 12, 'FontWeight', 'bold');
 ylabel('Accuracy per session', 'FontSize', 12, 'FontWeight', 'bold');
 title("Accuracy over sessions", 'FontSize', 14, 'FontWeight', 'bold');
@@ -80,28 +80,23 @@ ax.GridAlpha = 0.5;
 ax.Box = 'on';
 
 
-%% Statistical analysis across sessions 
+%% Statistical analysis across sessions
+extract_analysis(means_subj1, 1);
+extract_analysis(means_subj2, 2);
+extract_analysis((means_subj1 + means_subj2) / 2, 3);
 
-extract_analysis(means_subj1,1);
-extract_analysis(means_subj2,2);
-extract_analysis((means_subj1 + means_subj2)/2,3);
+extract_analysis(timeout_mean_subj1, 4);
+extract_analysis(timeout_mean_subj2, 5);
+extract_analysis((timeout_mean_subj1 + timeout_mean_subj2) / 2, 6);
 
-extract_analysis(timeout_mean_subj1,1);
-extract_analysis(timeout_mean_subj2,2);
-extract_analysis((timeout_mean_subj1 + timeout_mean_subj2)/2,3);
-
-
-%% Statistical analysis comparing sessions 
-
-ttest_extraction(accuracy_subj1,1);
-ttest_extraction(accuracy_subj2,2);
-
-ttest_extraction(timeouts_subj1,3);
-ttest_extraction(timeouts_subj2,4);
+%% Statistical analysis comparing sessions
+ttest_extraction(accuracy_subj1, 1);
+ttest_extraction(accuracy_subj2, 2);
+ttest_extraction(timeouts_subj1, 3);
+ttest_extraction(timeouts_subj2, 4);
 
 
 %% Functions 
-
 function [accuracy, timeouts] = extract_accuracy(subj)
     global LEFT_END_TIMEOUT;
     global RIGHT_END_TIMEOUT;
@@ -155,51 +150,45 @@ function extract_analysis(data, index)
     p = polyfit(x, y, 1); % fit a first-degree polynomial to the data
     yfit = polyval(p, x); % predicted values of y based on line of best fit
     r = corrcoef(y, yfit); % correlation coefficient
-    rsq = r(1,2)^2; % R-squared value
-    disp(rsq);
-    
-    lim = [];
-    titles = "";
-    switch index
-        case 1
-            lim = [.05 .65];
-            titles = "Average Percentage of Timeouts + Statistical Analysis for Subject 1";
-        case 2
-            lim = [.25 .75];
-            titles = "Average Percentage of Timeouts + Statistical Analysis for Subject 2";
-        case 3
-            lim = [.2 .7];
-            titles = "Average Percentage of Timeouts + Statistical Analysis for Both Subjects";
-    end 
-    
-    
-    % Updated style for extract_analysis plots
-    figure;
-    hold on;
-    str = "R-squared = " + string(round(rsq, 4));
-    dim = [.65 .1 .3 .1];
-    annotation('textbox', dim, 'String', str, 'FitBoxToText', 'on', ...
-               'BackgroundColor', [1 1 1], 'EdgeColor', [0, 0, 0], ...
-               'LineWidth', 1.5, 'FontSize', 12, 'FontWeight', 'bold', 'Color', [0.1, 0.1, 0.1]);
+    rsq = r(1, 2)^2; % R-squared value
 
-    plot(x, y, 'o', x, polyval(p, x), '-', 'LineWidth', 2, 'Color', [0, 0.4470, 0.7410], 'MarkerFaceColor', [0, 0.4470, 0.7410], 'MarkerSize', 8);
-    ylim(lim);
+    if index == 1
+        figure;
+        subplot(1, 2, 1);
+        hold on;
+    elseif index == 4
+        subplot(1, 2, 2);
+        hold on;
+    end
+
+    plot(x, y, 'o-', 'LineWidth', 2, 'MarkerSize', 8);
     xlim([0.8 6.2]);
-    xlabel('Session', 'FontSize', 12, 'FontWeight', 'bold');
-    ylabel('Percentage of Timeouts', 'FontSize', 12, 'FontWeight', 'bold');
-    title(titles, 'FontSize', 14, 'FontWeight', 'bold');
-    grid on;
-    ax = gca;
-    ax.FontSize = 11;
-    ax.FontWeight = 'bold';
-    ax.LineWidth = 1.5;
-    ax.GridLineStyle = '--';
-    ax.GridAlpha = 0.5;
-    ax.Box = 'on';
-    hold off;
 
+    if index == 1 || index == 4
+        xlabel('Session', 'FontSize', 12, 'FontWeight', 'bold');
+        ylabel('Percentage', 'FontSize', 12, 'FontWeight', 'bold');
+        grid on;
+        ylim([0 1]);
+        ax = gca;
+        ax.FontSize = 11;
+        ax.FontWeight = 'bold';
+        ax.LineWidth = 1.5;
+        ax.GridLineStyle = '--';
+        ax.GridAlpha = 0.5;
+        ax.Box = 'on';
+    end
+
+    if index == 1 || index == 2 || index == 3
+        title('Command Delivery Accuracy over Session', 'FontSize', 14, 'FontWeight', 'bold');
+    else
+        title('Timeout Percentage over Sessions', 'FontSize', 14, 'FontWeight', 'bold');
+    end
+
+    if index == 3 || index == 6
+        legend(["Subject 1 (R^2 = " + num2str(rsq, "%.4f") + ")", "Subject 2 (R^2 = " + num2str(rsq, "%.4f") + ")", "Both Subjects (R^2 = " + num2str(rsq, "%.4f") + ")"], 'Location', 'Best');
+        hold off;
+    end
 end
-
 
 function ttest_extraction(data, index)
     p_list = [];
@@ -209,45 +198,45 @@ function ttest_extraction(data, index)
         if i == 1
             p_list(i) = 0;
         else
-            [h, p] = ttest(data(1:3), data(idx:idx+2));
+            [h, p] = ttest(data(1:3), data(idx:idx + 2));
             p_list(i) = p;
             idx = idx + 3;
         end
     end
 
-    lim = [];
-    titles = "";
-    switch index
-        case 1
-            lim = [0 1.2];
-            titles = "P Value Statistical Analysis of Accuracy for Subject 1";
-        case 2
-            lim = [0 1.2];
-            titles = "P Value Statistical Analysis of Accuracy for Subject 2";
-        case 3
-            lim = [0 1];
-            titles = "P Value Statistical Analysis of Timeout Percentage for Subject 1";
-        case 4
-            lim = [0 0.4];
-            titles = "P Value Statistical Analysis of Timeout Percentage for Subject 2";
-        
-    end 
+    if index == 1
+        figure;
+        subplot(1, 2, 1);
+        hold on;
+    elseif index == 3
+        subplot(1, 2, 2);
+        hold on;
+    end
 
-    % Updated style for ttest_extraction plots
-    figure
-    hold on;
-    plot(x, p_list, 'o', 'LineWidth', 2, 'Color', [0, 0.4470, 0.7410], 'MarkerFaceColor', [0, 0.4470, 0.7410], 'MarkerSize', 8);
-    hold off;
-    ylim(lim);
-    xlabel('Session', 'FontSize', 12, 'FontWeight', 'bold');
-    ylabel('P Value', 'FontSize', 12, 'FontWeight', 'bold');
-    title(titles, 'FontSize', 14, 'FontWeight', 'bold');
-    grid on;
-    ax = gca;
-    ax.FontSize = 11;
-    ax.FontWeight = 'bold';
-    ax.LineWidth = 1.5;
-    ax.GridLineStyle = '--';
-    ax.GridAlpha = 0.5;
-    ax.Box = 'on';
+        plot(x, p_list, 'o-', 'LineWidth', 2, 'MarkerSize', 8);
+
+    if index == 1 || index == 3
+        xlabel('Session', 'FontSize', 12, 'FontWeight', 'bold');
+        ylabel('P Value', 'FontSize', 12, 'FontWeight', 'bold');
+        ylim([0 1]);
+        grid on;
+        ax = gca;
+        ax.FontSize = 11;
+        ax.FontWeight = 'bold';
+        ax.LineWidth = 1.5;
+        ax.GridLineStyle = '--';
+        ax.GridAlpha = 0.5;
+        ax.Box = 'on';
+    end
+
+    if index == 1 || index == 2
+        title('Command Delivery Accuracy Relative to the First Session', 'FontSize', 14, 'FontWeight', 'bold');
+    else
+        title('Timeout Percentage Relative to the First Session', 'FontSize', 14, 'FontWeight', 'bold');
+    end
+
+    if index == 2 || index == 4
+        legend(["Accuracy - Subject 1", "Accuracy - Subject 2", "Timeouts - Subject 1", "Timeouts - Subject 2"], 'Location', 'Best');
+        hold off;
+    end
 end

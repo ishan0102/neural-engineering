@@ -46,14 +46,12 @@ for i = 1:7
     fisher_score_sum{end+1} = (sum_score);  
     
     % Select the appropriate subplot based on the index i
-    subplot(3,3,i);
+    subplot(1,7,i);
     hold on;
     title("Session "+i);
     topoplot(fisher_score_sum{end}, ch32Locations, 'maplimits', 'maxmin');
     hold off;
 end
-text(1,-0.7,'Summed Fisher Score for Subject 1 on Sessions 1-7','HorizontalAlignment','center','FontSize',9,'FontWeight','bold','Interpreter','none');
-
 
 figure
 fisher_score_sum = {};
@@ -63,13 +61,12 @@ for i = 1:7
     fisher_score_sum{end+1} = (sum_score);  
     
     % Select the appropriate subplot based on the index i
-    subplot(3,3,i);
+    subplot(1,7,i);
     hold on;
     title("Session "+i);
     topoplot(fisher_score_sum{end}, ch32Locations, 'maplimits', 'maxmin');
     hold off;
 end
-text(1,-0.7,'Summed Fisher Score for Subject 2 on Sessions 1-7','HorizontalAlignment','center','FontSize',9,'FontWeight','bold','Interpreter','none');
 
 % fisher_score_sum = {};
 % for i = 1:7
@@ -319,29 +316,39 @@ function graph_statistical_analysis(data, subj)
     titles = "";
     switch subj
         case 1
-            lim = [0, .5];
+            lim = [0, 1];
             lim1 = [0.8, 7.2];
-            titles = "Statistical Analyisis of Best Channel/Band for Subject 1";
+            titles = "Analysis on Best Channel and Band for Subject 1";
         case 2
             lim1 = [0.8, 7.2];
-            lim = [0, .65];
-            titles = "Statistical Analyisis of Best Channel/Band for Subject 2";
+            lim = [0, 1];
+            titles = "Analysis Best Channel and Band for Subject 2";
         case 3
             lim1 = [0.8, 6.2];
-            lim = [0, .8];
-            titles = "Statistical Analyisis of top Feature for Subject 2";
+            lim = [0, 1];
+            titles = "Analysis on Top 10 Features for Subject 2";
     end
-    
     
     str = "R-squared = " + string(rsq);
     dim = [.2 .5 .3 .3];
     annotation('textbox', dim, 'String', str, 'FitBoxToText', 'on');
-    plot(x, y, 'o', x, polyval(p, x), '-');
+    plot(x, y, 'o', 'LineWidth', 2, 'Color', [0, 0.4470, 0.7410], 'MarkerFaceColor', [0, 0.4470, 0.7410], 'MarkerSize', 8);
+    plot(x, yfit, '-', 'LineWidth', 2, 'Color', [0.8500, 0.3250, 0.0980]);
     ylim(lim);
     xlim(lim1);
-    xlabel('Session');
-    ylabel('Fischer Score');
-    title(titles);
+    xlabel('Session', 'FontSize', 12, 'FontWeight', 'bold');
+    ylabel('Fischer Score', 'FontSize', 12, 'FontWeight', 'bold');
+    title(titles, 'FontSize', 14, 'FontWeight', 'bold');
+    legend("Data", "Fit", 'FontSize', 10, 'Location', 'best');
+    grid on;
+    ax = gca;
+    ax.FontSize = 11;
+    ax.FontWeight = 'bold';
+    ax.LineWidth = 1.5;
+    ax.GridLineStyle = '--';
+    ax.GridAlpha = 0.5;
+    ax.Box = 'on';
+    
     hold off;
 end
 
